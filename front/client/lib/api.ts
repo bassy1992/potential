@@ -1,6 +1,14 @@
 // API configuration and service functions
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
+console.log('[API] Base URL:', API_BASE_URL);
+
+function logAndThrow(message: string, response: Response): never {
+  const err = new Error(`${message} — ${response.status} ${response.statusText} (${response.url})`);
+  console.error('[API Error]', err.message);
+  throw err;
+}
+
 export interface Property {
   id: number;
   title: string;
@@ -73,7 +81,7 @@ export async function fetchProperties(params?: {
   const response = await fetch(url);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch properties: ${response.statusText}`);
+    logAndThrow('Failed to fetch properties', response);
   }
   
   return response.json();
@@ -84,7 +92,7 @@ export async function fetchPropertyById(id: number): Promise<Property> {
   const response = await fetch(`${API_BASE_URL}/properties/${id}/`);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch property: ${response.statusText}`);
+    logAndThrow('Failed to fetch property', response);
   }
   
   return response.json();
@@ -95,7 +103,7 @@ export async function fetchFeaturedProperties(): Promise<Property[]> {
   const response = await fetch(`${API_BASE_URL}/properties/featured/`);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch featured properties: ${response.statusText}`);
+    logAndThrow('Failed to fetch featured properties', response);
   }
   
   return response.json();
@@ -107,7 +115,7 @@ export async function fetchPropertiesForSale(page?: number): Promise<PaginatedRe
   const response = await fetch(`${API_BASE_URL}/properties/for_sale/${queryParams}`);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch properties for sale: ${response.statusText}`);
+    logAndThrow('Failed to fetch properties for sale', response);
   }
   
   return response.json();
@@ -119,7 +127,7 @@ export async function fetchPropertiesForRent(page?: number): Promise<PaginatedRe
   const response = await fetch(`${API_BASE_URL}/properties/for_rent/${queryParams}`);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch properties for rent: ${response.statusText}`);
+    logAndThrow('Failed to fetch properties for rent', response);
   }
   
   return response.json();

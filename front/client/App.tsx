@@ -11,7 +11,24 @@ import Properties from "./pages/Properties";
 import PropertyDetails from "./pages/PropertyDetails";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      throwOnError: false,
+    },
+  },
+});
+
+// Log all query errors to the browser console
+queryClient.getQueryCache().subscribe((event) => {
+  if (event.type === "updated" && event.query.state.status === "error") {
+    console.error(
+      `[Query Error] key: ${JSON.stringify(event.query.queryKey)}`,
+      event.query.state.error
+    );
+  }
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
