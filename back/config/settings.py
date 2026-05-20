@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +27,14 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-_#*%%41-d-fv(^*!eb1^t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+# Parse ALLOWED_HOSTS — hardcoded fallback includes Railway and Vercel domains
+_allowed_hosts_raw = os.environ.get(
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,potential-production.up.railway.app,'
+    'land-listing-portal-76d-1py35obtk-bassys-projects-fca17413.vercel.app,'
+    'land-listing-portal-76d.vercel.app'
+)
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_raw.split(',') if h.strip()]
 
 
 # Application definition
@@ -138,11 +146,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS = config(
+# CORS Settings — hardcoded fallback includes Vercel frontend
+_cors_raw = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173',
-    cast=Csv()
+    'http://localhost:5173,http://127.0.0.1:5173,'
+    'https://land-listing-portal-76d-1py35obtk-bassys-projects-fca17413.vercel.app,'
+    'https://land-listing-portal-76d.vercel.app'
 )
+CORS_ALLOWED_ORIGINS = [h.strip() for h in _cors_raw.split(',') if h.strip()]
 
 CORS_ALLOW_CREDENTIALS = True
 
