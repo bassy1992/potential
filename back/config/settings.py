@@ -165,8 +165,8 @@ if USE_DO_SPACES:
     # Use CDN endpoint for better performance and public access
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com'
     
-    # Use custom storage backend that forces public-read
-    DEFAULT_FILE_STORAGE = 'properties.storage.PublicMediaStorage'
+    # Use standard S3Boto3Storage
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 else:
     # Local media files (development)
