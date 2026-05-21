@@ -158,6 +158,21 @@ CORS_ALLOWED_ORIGINS = [h.strip() for h in _cors_raw.split(',') if h.strip()]
 
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF Settings - Trust frontend domains
+CSRF_TRUSTED_ORIGINS = [
+    'https://potential-production.up.railway.app',
+    'https://land-listing-portal-76d-1py35obtk-bassys-projects-fca17413.vercel.app',
+    'https://land-listing-portal-76d.vercel.app',
+    'https://*.vercel.app',  # Allow all Vercel preview deployments
+]
+
+# For development
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ])
+
 # REST Framework Settings
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
