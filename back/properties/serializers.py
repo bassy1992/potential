@@ -42,6 +42,14 @@ class PropertyListSerializer(serializers.ModelSerializer):
     def get_primary_image(self, obj):
         primary = obj.images.filter(is_primary=True).first()
         if primary:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(primary.image.url)
             return primary.image.url
         first_image = obj.images.first()
-        return first_image.image.url if first_image else None
+        if first_image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(first_image.image.url)
+            return first_image.image.url
+        return None
