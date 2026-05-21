@@ -1,9 +1,6 @@
 {
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/spa",
-  "engines": {
-    "node": "22.x"
-  },
   "routes": [
     {
       "handle": "filesystem"
