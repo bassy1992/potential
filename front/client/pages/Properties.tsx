@@ -23,6 +23,28 @@ export default function Properties() {
 
   const properties = data?.results || [];
 
+  // Log API response for debugging
+  useEffect(() => {
+    if (data) {
+      console.log('API Response:', {
+        count: data.count,
+        properties: properties.length,
+        firstProperty: properties[0]
+      });
+      
+      // Log image URLs
+      properties.forEach(prop => {
+        console.log(`Property ${prop.id} (${prop.title}):`, {
+          primary_image: prop.primary_image,
+          has_image: !!prop.primary_image
+        });
+      });
+    }
+    if (error) {
+      console.error('API Error:', error);
+    }
+  }, [data, error, properties]);
+
   // Format price for display
   const formatPrice = (price: string, status: string) => {
     const numPrice = parseFloat(price);
@@ -188,6 +210,21 @@ export default function Properties() {
                           src={property.primary_image}
                           alt={property.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            console.error('Image failed to load:', {
+                              url: property.primary_image,
+                              property: property.title,
+                              propertyId: property.id
+                            });
+                            // Hide broken image
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          onLoad={() => {
+                            console.log('Image loaded successfully:', {
+                              url: property.primary_image,
+                              property: property.title
+                            });
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
