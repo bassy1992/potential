@@ -3,11 +3,8 @@
 # Run migrations
 python manage.py migrate --noinput
 
-# Create superuser if environment variables are set
-if [ ! -z "$DJANGO_SUPERUSER_USERNAME" ]; then
-    echo "Creating superuser..."
-    python create_superuser.py
-fi
+# Create superuser using management command
+python manage.py ensure_superuser
 
 # Collect static files
 python manage.py collectstatic --noinput
