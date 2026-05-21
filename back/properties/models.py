@@ -69,7 +69,7 @@ class Property(models.Model):
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='properties/')
+    image = models.ImageField(upload_to='property_images/')
     caption = models.CharField(max_length=255, blank=True)
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -79,3 +79,9 @@ class PropertyImage(models.Model):
     
     def __str__(self):
         return f"Image for {self.property.title}"
+    
+    def save(self, *args, **kwargs):
+        # If this is set as primary, unset other primary images for this property
+        if self.is_primary:
+            PropertyImage.objects.filter(property=self.property, is_primary=True).update(is_primary=False)
+        super().save(*args, **kwargs)
