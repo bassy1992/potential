@@ -137,13 +137,36 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media files configuration
+USE_DO_SPACES = config('USE_DO_SPACES', default=False, cast=bool)
+
+if USE_DO_SPACES:
+    # DigitalOcean Spaces configuration
+    AWS_ACCESS_KEY_ID = config('DO_SPACES_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('DO_SPACES_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('DO_SPACES_BUCKET_NAME')
+    AWS_S3_REGION_NAME = config('DO_SPACES_REGION', default='sfo3')
+    AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+    AWS_LOCATION = 'media'
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
+    
+    # Use DigitalOcean Spaces for media files
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+else:
+    # Local media files (development)
+    MEDIA_URL = 'media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
