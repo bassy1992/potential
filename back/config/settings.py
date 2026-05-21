@@ -155,9 +155,12 @@ if USE_DO_SPACES:
     AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
+        'ACL': 'public-read',
     }
     AWS_LOCATION = 'media'
     AWS_DEFAULT_ACL = 'public-read'
+    AWS_QUERYSTRING_AUTH = False  # Don't add authentication query parameters to URLs
+    AWS_S3_FILE_OVERWRITE = False
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
     
     # Use DigitalOcean Spaces for media files
