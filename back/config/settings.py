@@ -183,9 +183,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS Settings — hardcoded fallback includes Vercel frontend
 _cors_raw = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://127.0.0.1:5173,'
+    'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,'
     'https://land-listing-portal-76d-1py35obtk-bassys-projects-fca17413.vercel.app,'
-    'https://land-listing-portal-76d.vercel.app'
+    'https://land-listing-portal-76d.vercel.app,'
+    'https://front-pi-drab.vercel.app,'
+    'https://front-llljqhnlb-bassys-projects-fca17413.vercel.app,'
+    'https://front-lime-sigma.vercel.app,'
+    'https://front-bassys-projects-fca17413.vercel.app'
 )
 CORS_ALLOWED_ORIGINS = [h.strip() for h in _cors_raw.split(',') if h.strip()]
 
@@ -196,6 +200,10 @@ CSRF_TRUSTED_ORIGINS = [
     'https://potential-production.up.railway.app',
     'https://land-listing-portal-76d-1py35obtk-bassys-projects-fca17413.vercel.app',
     'https://land-listing-portal-76d.vercel.app',
+    'https://front-pi-drab.vercel.app',
+    'https://front-llljqhnlb-bassys-projects-fca17413.vercel.app',
+    'https://front-lime-sigma.vercel.app',
+    'https://front-bassys-projects-fca17413.vercel.app',
     'https://*.vercel.app',  # Allow all Vercel preview deployments
 ]
 
