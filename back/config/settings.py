@@ -193,6 +193,11 @@ _cors_raw = os.environ.get(
 )
 CORS_ALLOWED_ORIGINS = [h.strip() for h in _cors_raw.split(',') if h.strip()]
 
+# Allow all Vercel domains using regex
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Settings - Trust frontend domains
