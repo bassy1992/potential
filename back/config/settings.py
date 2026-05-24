@@ -176,10 +176,16 @@ if USE_DO_SPACES:
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/{PUBLIC_MEDIA_LOCATION}/'
 
-    # Django 4.2+ uses STORAGES dict (DEFAULT_FILE_STORAGE is removed in Django 6)
+    # Django 6 STORAGES configuration
     STORAGES = {
         "default": {
-            "BACKEND": "properties.storage.PublicMediaStorage",
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "location": "media",
+                "default_acl": "public-read",
+                "file_overwrite": False,
+                "querystring_auth": False,
+            },
         },
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
