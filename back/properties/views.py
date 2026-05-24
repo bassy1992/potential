@@ -165,6 +165,32 @@ def check_storage_config(request):
     from django.conf import settings
     import os
     
+    # Try to test boto3 connection
+    boto3_test = "Not tested"
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+        
+        client = boto3.client(
+            's3',
+            region_name=settings.AWS_S3_REGION_NAME if settings.USE_DO_SPACES else None,
+            endpoint_url=settings.AWS_S3_ENDPOINT_URL if settings.USE_DO_SPACES else None,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID if settings.USE_DO_SPACES else None,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY if settings.USE_DO_SPACES else None
+        )
+        
+        if settings.USE_DO_SPACES:
+            response = client.list_objects_v2(
+                Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                Prefix='media/property_images/',
+                MaxKeys=1
+            )
+            boto3_test = f"✅ Connected - Found {len(response.get('Contents', []))} objects"
+        else:
+            boto3_test = "Skipped - USE_DO_SPACES is False"
+    except Exception as e:
+        boto3_test = f"❌ Error: {str(e)}"
+    
     return Response({
         'USE_DO_SPACES': settings.USE_DO_SPACES,
         'USE_DO_SPACES_env': os.environ.get('USE_DO_SPACES'),
@@ -172,6 +198,7 @@ def check_storage_config(request):
         'AWS_S3_REGION_NAME': settings.AWS_S3_REGION_NAME if settings.USE_DO_SPACES else None,
         'DEFAULT_FILE_STORAGE': settings.DEFAULT_FILE_STORAGE if settings.USE_DO_SPACES else 'default',
         'has_access_key': bool(getattr(settings, 'AWS_ACCESS_KEY_ID', None)),
+        'boto3_connection_test': boto3_test,
     })
 
 
