@@ -170,10 +170,11 @@ if USE_DO_SPACES:
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
-    
-    # Media files configuration
+    AWS_S3_ADDRESSING_STYLE = 'virtual'
+
+    # Media files - use bucket subdomain format
     PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/{PUBLIC_MEDIA_LOCATION}/'
     DEFAULT_FILE_STORAGE = 'properties.storage.PublicMediaStorage'
 else:
     # Local media files (development)
