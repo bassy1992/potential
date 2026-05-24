@@ -156,6 +156,25 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
 
 
+@api_view(['GET'])
+def check_storage_config(request):
+    """
+    Check storage configuration
+    GET /api/check-storage/
+    """
+    from django.conf import settings
+    import os
+    
+    return Response({
+        'USE_DO_SPACES': settings.USE_DO_SPACES,
+        'USE_DO_SPACES_env': os.environ.get('USE_DO_SPACES'),
+        'AWS_STORAGE_BUCKET_NAME': settings.AWS_STORAGE_BUCKET_NAME if settings.USE_DO_SPACES else None,
+        'AWS_S3_REGION_NAME': settings.AWS_S3_REGION_NAME if settings.USE_DO_SPACES else None,
+        'DEFAULT_FILE_STORAGE': settings.DEFAULT_FILE_STORAGE if settings.USE_DO_SPACES else 'default',
+        'has_access_key': bool(getattr(settings, 'AWS_ACCESS_KEY_ID', None)),
+    })
+
+
 @api_view(['POST'])
 def seed_properties(request):
     """
