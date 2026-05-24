@@ -26,7 +26,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
     def featured(self, request):
         """Get featured properties"""
         featured_properties = self.queryset.filter(featured=True)
-        serializer = self.get_serializer(featured_properties, many=True)
+        serializer = PropertyListSerializer(featured_properties, many=True, context={'request': request})
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
