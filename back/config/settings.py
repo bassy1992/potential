@@ -175,7 +175,16 @@ if USE_DO_SPACES:
     # Media files - use bucket subdomain format
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'properties.storage.PublicMediaStorage'
+
+    # Django 4.2+ uses STORAGES dict (DEFAULT_FILE_STORAGE is removed in Django 6)
+    STORAGES = {
+        "default": {
+            "BACKEND": "properties.storage.PublicMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 else:
     # Local media files (development)
     MEDIA_URL = 'media/'
