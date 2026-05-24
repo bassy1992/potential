@@ -157,6 +157,118 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
+def get_presigned_upload_url(request):
+    """
+    Generate a presigned URL for direct client-to-DO-Spaces upload
+    GET /api/presigned-upload/?filename=image.jpg&property_id=1
+    """
+    from django.conf import settings
+    import boto3
+    import uuid
+
+    filename = request.query_params.get('filename')
+    property_id = request.query_params.get('property_id')
+
+    if not filename or not property_id:
+        return Response(
+            {'error': 'filename and property_id are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not settings.USE_DO_SPACES:
+        return Response(
+            {'error': 'DO Spaces not configured'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Generate unique filename
+    ext = filename.rsplit('.', 1)[-1].lower()
+    unique_filename = f"property_images/property_{property_id}_{uuid.uuid4().hex}.{ext}"
+
+    # Create S3 client
+    session = boto3.session.Session()
+    client = session.client(
+        's3',
+        region_name=settings.AWS_S3_REGION_NAME,
+        endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+
+    # Generate presigned POST URL
+    presigned = client.generate_presigned_post(
+        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+        Key=f"media/{unique_filename}",
+        Fields={
+            'acl': 'public-read',
+            'Content-Type': f'image/{ext}',
+        },
+        Conditions=[
+            {'acl': 'public-read'},
+            ['starts-with', '$Content-Type', 'image/'],
+            ['content-length-range', 1, 10 * 1024 * 1024],  # max 10MB
+        ],
+        ExpiresIn=3600
+    )
+
+    # The final public URL of the uploaded file
+    public_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.{settings.AWS_S3_REGION_NAME}.digitaloceanspaces.com/media/{unique_filename}"
+
+    return Response({
+        'upload_url': presigned['url'],
+        'fields': presigned['fields'],
+        'public_url': public_url,
+        'key': f"media/{unique_filename}",
+    })
+
+
+@api_view(['POST'])
+def register_uploaded_image(request):
+    """
+    Register an image that was directly uploaded to DO Spaces
+    POST /api/register-image/
+    Body: { property_id, image_url, caption, is_primary }
+    """
+    property_id = request.data.get('property_id')
+    image_url = request.data.get('image_url')
+    caption = request.data.get('caption', '')
+    is_primary = request.data.get('is_primary', False)
+
+    if not property_id or not image_url:
+        return Response(
+            {'error': 'property_id and image_url are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        property_obj = Property.objects.get(id=property_id)
+    except Property.DoesNotExist:
+        return Response({'error': 'Property not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # If primary, unset others
+    if is_primary:
+        PropertyImage.objects.filter(property=property_obj, is_primary=True).update(is_primary=False)
+
+    # If no images yet, make this primary
+    if not PropertyImage.objects.filter(property=property_obj).exists():
+        is_primary = True
+
+    # Save the image URL directly (not as a file field)
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO properties_propertyimage (property_id, image, caption, is_primary, created_at) VALUES (%s, %s, %s, %s, NOW())",
+            [property_id, f"property_images/{image_url.split('property_images/')[-1]}", caption, is_primary]
+        )
+
+    return Response({
+        'message': 'Image registered successfully',
+        'image_url': image_url,
+        'is_primary': is_primary,
+    }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
 def check_storage_config(request):
     """
     Check storage configuration
