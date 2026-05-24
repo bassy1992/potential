@@ -1,5 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+
+
+def delete_file_from_storage(file_field):
+    """Delete a file from storage (DO Spaces or local)"""
+    try:
+        if file_field and file_field.name:
+            storage = file_field.storage
+            if storage.exists(file_field.name):
+                storage.delete(file_field.name)
+    except Exception as e:
+        # Log but don't raise - deletion should not block DB operations
+        print(f"Warning: Could not delete file {file_field.name} from storage: {e}")
 
 
 class Property(models.Model):
@@ -85,3 +99,15 @@ class PropertyImage(models.Model):
         if self.is_primary:
             PropertyImage.objects.filter(property=self.property, is_primary=True).update(is_primary=False)
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Delete file from DO Spaces / storage before removing DB record
+        delete_file_from_storage(self.image)
+        super().delete(*args, **kwargs)
+
+
+@receiver(pre_delete, sender=Property)
+def delete_property_images_from_storage(sender, instance, **kwargs):
+    """When a Property is deleted, delete all its images from storage first"""
+    for image in instance.images.all():
+        delete_file_from_storage(image.image)
