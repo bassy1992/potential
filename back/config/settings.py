@@ -147,6 +147,18 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Media files configuration
 USE_DO_SPACES = config('USE_DO_SPACES', default=False, cast=bool)
 
+# Force USE_DO_SPACES to True if we have the required credentials
+if not USE_DO_SPACES:
+    # Check if DO Spaces credentials exist in environment
+    import os
+    if all([
+        os.environ.get('DO_SPACES_ACCESS_KEY_ID'),
+        os.environ.get('DO_SPACES_SECRET_ACCESS_KEY'),
+        os.environ.get('DO_SPACES_BUCKET_NAME'),
+    ]):
+        USE_DO_SPACES = True
+        print("⚠️ Forcing USE_DO_SPACES=True because credentials are present")
+
 if USE_DO_SPACES:
     # DigitalOcean Spaces configuration
     AWS_ACCESS_KEY_ID = config('DO_SPACES_ACCESS_KEY_ID')
