@@ -1,14 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
-
-
-def get_image_storage():
-    """Get the appropriate storage backend for images"""
-    if settings.USE_DO_SPACES:
-        from .storage import MediaStorage
-        return MediaStorage()
-    return None
 
 
 class Property(models.Model):
@@ -78,7 +69,7 @@ class Property(models.Model):
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='property_images/', storage=get_image_storage)
+    image = models.ImageField(upload_to='property_images/')
     caption = models.CharField(max_length=255, blank=True)
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

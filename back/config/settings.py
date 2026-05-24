@@ -165,24 +165,16 @@ if USE_DO_SPACES:
     AWS_SECRET_ACCESS_KEY = config('DO_SPACES_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = config('DO_SPACES_BUCKET_NAME')
     AWS_S3_REGION_NAME = config('DO_SPACES_REGION', default='sfo3')
-    AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
-    AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',
-        'ACL': 'public-read',
-    }
-    AWS_LOCATION = 'media'
     AWS_DEFAULT_ACL = 'public-read'
-    AWS_QUERYSTRING_AUTH = False  # Don't add authentication query parameters to URLs
+    AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     
-    # Use CDN endpoint for better performance and public access
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com'
-    
-    # Media URL points to CDN
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
-    
-    # Note: We use custom storage in the model, not DEFAULT_FILE_STORAGE
-    # This ensures proper initialization of the storage backend
+    # Media files configuration
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'properties.storage.PublicMediaStorage'
 else:
     # Local media files (development)
     MEDIA_URL = 'media/'
