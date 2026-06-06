@@ -1,0 +1,13 @@
+/* Resize login logo */
+#login-logo img,
+.login-logo img {
+    max-width: 220px !important;
+    height: auto !important;
+}
+
+/* Resize sidebar logo */
+.navbar-brand img,
+#jazzy-navbar img {
+    max-height: 50px !important;
+    width: auto !important;
+}

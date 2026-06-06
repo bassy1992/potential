@@ -311,7 +311,7 @@ JAZZMIN_SETTINGS = {
     "related_modal_active": False,
     
     # Custom CSS/JS
-    "custom_css": None,
+    "custom_css": "css/admin_custom.css",
     "custom_js": None,
     
     # Whether to show the UI customizer on the sidebar
