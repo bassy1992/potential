@@ -258,9 +258,9 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Real Estate Platform",
     
     # Logo to use for your site
-    "site_logo": None,
-    "login_logo": None,
-    "site_icon": None,
+    "site_logo": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
+    "login_logo": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
+    "site_icon": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
     
     # Welcome text on the login screen
     "welcome_sign": "Welcome to Real Estate Admin",
