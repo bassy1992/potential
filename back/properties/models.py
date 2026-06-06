@@ -49,11 +49,22 @@ class Property(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     
     # Property details
-    bedrooms = models.IntegerField(default=0)
-    bathrooms = models.DecimalField(max_digits=3, decimal_places=1, default=0)
+    bedrooms = models.IntegerField(default=0, null=True, blank=True)
+    bathrooms = models.DecimalField(max_digits=3, decimal_places=1, default=0, null=True, blank=True)
     square_feet = models.IntegerField(null=True, blank=True)
     lot_size = models.IntegerField(null=True, blank=True, help_text='Lot size in square feet')
     year_built = models.IntegerField(null=True, blank=True)
+
+    # Land specific
+    LAND_SIZE_UNITS = [
+        ('plots', 'Plots'),
+        ('acres', 'Acres'),
+        ('sqft', 'Square Feet'),
+        ('sqm', 'Square Meters'),
+        ('hectares', 'Hectares'),
+    ]
+    land_size = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text='Size of the land')
+    land_size_unit = models.CharField(max_length=20, choices=LAND_SIZE_UNITS, default='plots', blank=True)
     
     # Features
     parking_spaces = models.IntegerField(default=0)

@@ -11,7 +11,7 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 class PropertySerializer(serializers.ModelSerializer):
     images = PropertyImageSerializer(many=True, read_only=True)
     google_maps_url = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = Property
         fields = [
@@ -19,6 +19,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'address', 'city', 'state', 'zip_code', 'country',
             'latitude', 'longitude', 'google_maps_url',
             'bedrooms', 'bathrooms', 'square_feet', 'lot_size', 'year_built',
+            'land_size', 'land_size_unit',
             'parking_spaces', 'has_garage', 'has_pool', 'has_garden',
             'featured', 'created_at', 'updated_at', 'images'
         ]
@@ -29,12 +30,13 @@ class PropertyListSerializer(serializers.ModelSerializer):
     """Lighter serializer for list views"""
     primary_image = serializers.SerializerMethodField()
     google_maps_url = serializers.ReadOnlyField()
-    
+
     class Meta:
         model = Property
         fields = [
             'id', 'title', 'property_type', 'status', 'price',
             'city', 'state', 'bedrooms', 'bathrooms', 'square_feet',
+            'land_size', 'land_size_unit',
             'latitude', 'longitude', 'google_maps_url',
             'featured', 'primary_image'
         ]

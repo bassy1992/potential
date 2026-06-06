@@ -15,7 +15,7 @@ class PropertyAdmin(admin.ModelAdmin):
     search_fields = ['title', 'description', 'address', 'city', 'state']
     list_editable = ['featured', 'status']
     inlines = [PropertyImageInline]
-    
+
     fieldsets = (
         ('Basic Information', {
             'fields': ('title', 'description', 'property_type', 'status', 'price', 'featured')
@@ -24,16 +24,22 @@ class PropertyAdmin(admin.ModelAdmin):
             'fields': ('address', 'city', 'state', 'zip_code', 'country', 'latitude', 'longitude'),
             'description': 'Add latitude and longitude for Google Maps integration. Example: 5.704306, -0.014479'
         }),
-        ('Property Details', {
-            'fields': ('bedrooms', 'bathrooms', 'square_feet', 'lot_size', 'year_built')
+        ('Land Size (for Land properties)', {
+            'fields': ('land_size', 'land_size_unit'),
+            'description': 'Fill in land size for land properties',
+            'classes': ('collapse',),
+        }),
+        ('Property Details (for Houses/Apartments etc.)', {
+            'fields': ('bedrooms', 'bathrooms', 'square_feet', 'lot_size', 'year_built'),
+            'description': 'Bedrooms and bathrooms are optional for land properties',
         }),
         ('Features', {
             'fields': ('parking_spaces', 'has_garage', 'has_pool', 'has_garden')
         }),
     )
-    
+
     readonly_fields = ['google_maps_url']
-    
+
     def google_maps_url(self, obj):
         """Display Google Maps link in admin"""
         if obj.latitude and obj.longitude:
@@ -41,6 +47,15 @@ class PropertyAdmin(admin.ModelAdmin):
             return format_html('<a href="{}" target="_blank">View on Google Maps</a>', url)
         return "No coordinates set"
     google_maps_url.short_description = "Google Maps"
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        # Make bedrooms and bathrooms not required in the form
+        if 'bedrooms' in form.base_fields:
+            form.base_fields['bedrooms'].required = False
+        if 'bathrooms' in form.base_fields:
+            form.base_fields['bathrooms'].required = False
+        return form
 
 
 @admin.register(PropertyImage)
