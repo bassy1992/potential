@@ -143,6 +143,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Media files configuration
 USE_DO_SPACES = config('USE_DO_SPACES', default=False, cast=bool)
@@ -258,9 +259,9 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Real Estate Platform",
     
     # Logo to use for your site
-    "site_logo": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
-    "login_logo": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
-    "site_icon": "https://studymate.sfo3.digitaloceanspaces.com/static/logo.png",
+    "site_logo": "img/logo.png",
+    "login_logo": "img/logo.png",
+    "site_icon": "img/logo.png",
     
     # Welcome text on the login screen
     "welcome_sign": "Welcome to Real Estate Admin",
