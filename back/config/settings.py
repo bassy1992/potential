@@ -212,7 +212,9 @@ _cors_raw = os.environ.get(
     'https://front-pi-drab.vercel.app,'
     'https://front-llljqhnlb-bassys-projects-fca17413.vercel.app,'
     'https://front-lime-sigma.vercel.app,'
-    'https://front-bassys-projects-fca17413.vercel.app'
+    'https://front-bassys-projects-fca17413.vercel.app,'
+    'https://potentialrealestate.org,'
+    'https://www.potentialrealestate.org'
 )
 CORS_ALLOWED_ORIGINS = [h.strip() for h in _cors_raw.split(',') if h.strip()]
 
@@ -232,7 +234,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://front-llljqhnlb-bassys-projects-fca17413.vercel.app',
     'https://front-lime-sigma.vercel.app',
     'https://front-bassys-projects-fca17413.vercel.app',
-    'https://*.vercel.app',  # Allow all Vercel preview deployments
+    'https://potentialrealestate.org',
+    'https://www.potentialrealestate.org',
+    'https://*.vercel.app',
 ]
 
 # For development
